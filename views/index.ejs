@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <title>Advanced URL Shortener Dashboard</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(99, 102, 241, 0.2);
+            --accent-color: #6366f1;
+            --accent-glow: #818cf8;
+        }
+
+        body { 
+            background: var(--bg-gradient); 
+            min-height: 100vh; 
+            color: #f8fafc; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .main-container {
+            max-width: 1200px; /* पूरी स्क्रीन का सही इस्तेमाल करने के लिए चौड़ाई बढ़ाई */
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        /* इनपुट बॉक्स वाला ग्लास कार्ड */
+        .input-card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid var(--border-color); 
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+            margin-bottom: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-control-custom {
+            background: rgba(15, 23, 42, 0.6) !important;
+            color: #fff !important;
+            border: 2px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 14px !important;
+            padding: 1rem 1.5rem !important;
+            font-size: 1.1rem !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--accent-color) !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: white;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+            background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+            color: white;
+        }
+
+        /* टेबल और लिंक्स वाला कार्ड */
+        .table-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+        }
+
+        .table-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* टेबल डिजाइन - गैप और स्पेस के लिए */
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px; /* रो (Rows) के बीच सुंदर स्पेसिंग */
+        }
+
+        .custom-table th {
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            padding: 12px 24px;
+            border: none;
+        }
+
+        .custom-table tbody tr {
+            background: rgba(15, 23, 42, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .custom-table tbody tr:hover {
+            background: rgba(15, 23, 42, 0.7);
+            transform: scale(1.005);
+        }
+
+        .custom-table td {
+            padding: 18px 24px; /* अंदर की स्पेसिंग बढ़ाई */
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: middle;
+        }
+
+        .custom-table td:first-child {
+            border-left: 1px solid rgba(255,255,255,0.05);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        .custom-table td:last-child {
+            border-right: 1px solid rgba(255,255,255,0.05);
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        /* लिंक कलर्स और डेकोरेशन */
+        .url-link-full {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: inline-block;
+            max-width: 550px; /* बड़े लिंक्स को सही से दिखाने के लिए स्पेस बढ़ाया */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .url-link-full:hover {
+            color: #cbd5e1;
+        }
+
+        .url-link-short {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .url-link-short:hover {
+            background: rgba(56, 189, 248, 0.2);
+            color: #7dd3fc;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container main-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1>🔗 Premium Link Analytics Dashboard</h1>
+            <p class="text-muted mt-2">Shorten, manage, and track your links beautifully</p>
+        </div>
+        
+        <!-- Input Form Section -->
+        <div class="input-card shadow">
+            <form action="/shortUrls" method="POST" class="row g-3 align-items-center">
+                <div class="col-lg-9 col-md-8">
+                    <input required placeholder="Paste your long destination URL here..." type="url" name="fullUrl" id="fullUrl" class="form-control form-control-custom">
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <button class="btn btn-custom w-100" type="submit">Shorten URL ✨</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Links Table Section -->
+        <div class="table-card shadow">
+            <h3>📂 Active Shortened Links</h3>
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60%;">Original Long URL</th>
+                            <th style="width: 40%;">Generated Short URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% urls.forEach(url => { %>
+                            <tr>
+                                <td>
+                                    <a href="<%= url.full %>" target="_blank" class="url-link-full" title="<%= url.full %>">
+                                        <%= url.full %>
+                                    </a>
+                                bagtd</td>
+                                <td>
+                                    <!-- यहाँ पर क्लिक करने से ओरिजिनल लिंक खुलेगा -->
+                                    <a href="/<%= url.short %>" target="_blank" class="url-link-short">
+                                        localhost:5000/<%= url.short %>
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
